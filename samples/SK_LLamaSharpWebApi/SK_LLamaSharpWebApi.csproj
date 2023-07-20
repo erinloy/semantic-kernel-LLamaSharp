@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<RootNamespace>SemanticKernel.LLamaSharp.WebApi</RootNamespace>
@@ -9,7 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LLamaSharp.Backend.Cuda11" />
+		<PackageReference Include="LLamaSharp.Backend.Cuda12" />
 		<PackageReference Include="Microsoft.SemanticKernel" />
 		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Memory.Sqlite" />
 		<PackageReference Include="Swashbuckle.AspNetCore" />
