@@ -16,6 +16,7 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
     /// </summary>
     public sealed class LLamaSharpChatCompletion : IChatCompletion, IDisposable
     {
+        private readonly Func<LLamaModel> _modelFunc;
         private readonly string _modelPath;
 
         private LLamaModel? _model;
@@ -30,6 +31,16 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
         public LLamaSharpChatCompletion(string modelPath)
         {
             this._modelPath = modelPath;
+            this._modelFunc = new Func<LLamaModel>(() =>
+            {
+                return _model ??= new LLamaModel(new LLama.Common.ModelParams(this._modelPath));
+            });
+        }
+
+        public LLamaSharpChatCompletion(Func<LLamaModel> modelFunc)
+        {
+            this._modelFunc = modelFunc;
+            this._modelPath = "";
         }
 
         /// <inheritdoc/>
@@ -83,7 +94,7 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
 
         private ChatSession CreateChatSession()
         {
-            _model ??= new LLamaModel(new LLama.Common.ModelParams(this._modelPath));
+            _model ??= _modelFunc.Invoke();
             var executor = new InteractiveExecutor(_model);
             var chatSession = new ChatSession(executor)
                 .WithHistoryTransform(new HistoryTransform())

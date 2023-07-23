@@ -18,6 +18,7 @@ namespace Microsoft.SemanticKernel.Connectors.AI.LLamaSharp.TextCompletion;
 /// </summary>
 public sealed class LLamaSharpTextCompletion : ITextCompletion, IDisposable
 {
+    private readonly Func<LLamaModel> _modelFunc;
     private readonly string _modelPath;
     private LLamaModel? _model;
 
@@ -29,6 +30,16 @@ public sealed class LLamaSharpTextCompletion : ITextCompletion, IDisposable
     public LLamaSharpTextCompletion(string modelPath)
     {
         this._modelPath = modelPath;
+        this._modelFunc = new Func<LLamaModel>(() =>
+        {
+            return _model ??= new LLamaModel(new ModelParams(_modelPath, contextSize: 2049)); 
+        });
+    }
+
+    public LLamaSharpTextCompletion(Func<LLamaModel> modelFunc)
+    {
+        this._modelFunc = modelFunc;
+        this._modelPath = "";
     }
 
     /// <summary>
@@ -60,10 +71,7 @@ public sealed class LLamaSharpTextCompletion : ITextCompletion, IDisposable
 
     private StatelessExecutor CreateExecutor()
     {
-        if (_model == null)
-        {
-            _model = new LLamaModel(new ModelParams(_modelPath, contextSize: 2049));
-        }
+        _model ??= this._modelFunc.Invoke();
         return new(this._model);
     }
 }

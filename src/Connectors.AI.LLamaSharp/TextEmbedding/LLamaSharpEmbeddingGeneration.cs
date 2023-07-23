@@ -18,6 +18,7 @@ public sealed class LLamaSharpEmbeddingGeneration : ITextEmbeddingGeneration, ID
 {
     private LLamaEmbedder? _embedder;
     private readonly string _modelPath;
+    private readonly Func<LLamaEmbedder> _modelFunc;
 
     /// <summary>
     /// Create LLamaSharpEmbedding generation instance
@@ -26,12 +27,27 @@ public sealed class LLamaSharpEmbeddingGeneration : ITextEmbeddingGeneration, ID
     public LLamaSharpEmbeddingGeneration(string modelPath)
     {
         this._modelPath = modelPath;
+        this._modelPath = modelPath;
+        this._modelFunc = new Func<LLamaEmbedder>(() =>
+        {
+            return _embedder ??= new LLamaEmbedder(new ModelParams(_modelPath, gpuLayerCount: 0));
+        });
+    }
+
+
+    public LLamaSharpEmbeddingGeneration(LLamaModel model)
+    {
+        this._modelFunc = new Func<LLamaEmbedder>(() =>
+        {
+            return _embedder ??= new LLamaEmbedder(new ModelParams(_modelPath, gpuLayerCount: 0));
+        });
+        this._modelPath = "";
     }
 
     /// <inheritdoc/>
     public async Task<IList<Embedding<float>>> GenerateEmbeddingsAsync(IList<string> data, CancellationToken cancellationToken = default)
     {
-        this._embedder = new LLamaEmbedder(new ModelParams(_modelPath, gpuLayerCount: 0));
+        this._embedder ??= this._modelFunc.Invoke();
         var result = data.Select(text => new Embedding<float>(_embedder.GetEmbeddings(text))).ToList();
         return await Task.FromResult(result).ConfigureAwait(false);
     }
