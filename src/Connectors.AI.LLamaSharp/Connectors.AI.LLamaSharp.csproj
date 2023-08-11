@@ -4,8 +4,10 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="LLamaSharp" />
 		<PackageReference Include="Microsoft.SemanticKernel.Abstractions" />
 		<PackageReference Include="Microsoft.VisualStudio.Validation" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\LLamaSharp\LLama\LLamaSharp.csproj" />
 	</ItemGroup>
 </Project>
