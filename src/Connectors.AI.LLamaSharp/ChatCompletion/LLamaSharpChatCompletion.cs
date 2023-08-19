@@ -16,10 +16,10 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
     /// </summary>
     public sealed class LLamaSharpChatCompletion : IChatCompletion, IDisposable
     {
-        private readonly Func<LLamaModel> _modelFunc;
+        private readonly Func<LLamaWeights> _modelFunc;
         private readonly string _modelPath;
-
-        private LLamaModel? _model;
+        private readonly LLama.Common.ModelParams _params;
+        private LLamaWeights? _model;
 
         private const string UserRole = "User:";
         private const string AssistantRole = "Assistant:";
@@ -31,13 +31,14 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
         public LLamaSharpChatCompletion(string modelPath)
         {
             this._modelPath = modelPath;
-            this._modelFunc = new Func<LLamaModel>(() =>
+            this._params = new LLama.Common.ModelParams(this._modelPath);
+            this._modelFunc = new Func<LLamaWeights>(() =>
             {
-                return _model ??= new LLamaModel(new LLama.Common.ModelParams(this._modelPath));
+                return _model ??= LLamaWeights.LoadFromFile(this._params);
             });
         }
 
-        public LLamaSharpChatCompletion(Func<LLamaModel> modelFunc)
+        public LLamaSharpChatCompletion(Func<LLamaWeights> modelFunc)
         {
             this._modelFunc = modelFunc;
             this._modelPath = "";
@@ -95,7 +96,8 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
         private ChatSession CreateChatSession()
         {
             _model ??= _modelFunc.Invoke();
-            var executor = new InteractiveExecutor(_model);
+            var context = _model.CreateContext(_params, Encoding.UTF8);
+            var executor = new InteractiveExecutor(context);
             var chatSession = new ChatSession(executor)
                 .WithHistoryTransform(new HistoryTransform())
                 .WithOutputTransform(new LLamaTransforms.KeywordTextOutputStreamTransform(new string[] { UserRole, AssistantRole }));

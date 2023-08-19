@@ -35,7 +35,7 @@ public sealed class LLamaSharpEmbeddingGeneration : ITextEmbeddingGeneration, ID
     }
 
 
-    public LLamaSharpEmbeddingGeneration(LLamaModel model)
+    public LLamaSharpEmbeddingGeneration(LLamaWeights model)
     {
         this._modelFunc = new Func<LLamaEmbedder>(() =>
         {
