@@ -17,31 +17,30 @@ namespace Microsoft.SemanticKernel.Connectors.AI.LLamaSharp.TextCompletion;
 public sealed class LLamaSharpEmbeddingGeneration : ITextEmbeddingGeneration, IDisposable
 {
     private LLamaEmbedder? _embedder;
-    private readonly string _modelPath;
+    private readonly ModelParams _params;
     private readonly Func<LLamaEmbedder> _modelFunc;
 
     /// <summary>
     /// Create LLamaSharpEmbedding generation instance
     /// </summary>
     /// <param name="modelPath"></param>
-    public LLamaSharpEmbeddingGeneration(string modelPath)
+    public LLamaSharpEmbeddingGeneration(ModelParams @params)
     {
-        this._modelPath = modelPath;
-        this._modelPath = modelPath;
+        this._params = @params;
         this._modelFunc = new Func<LLamaEmbedder>(() =>
         {
-            return _embedder ??= new LLamaEmbedder(new ModelParams(_modelPath, gpuLayerCount: 0));
+            return _embedder ??= new LLamaEmbedder(_params);
         });
     }
 
 
-    public LLamaSharpEmbeddingGeneration(LLamaWeights model)
+    public LLamaSharpEmbeddingGeneration(LLamaWeights model, ModelParams @params)
     {
+        _params = @params;
         this._modelFunc = new Func<LLamaEmbedder>(() =>
         {
-            return _embedder ??= new LLamaEmbedder(new ModelParams(_modelPath, gpuLayerCount: 0));
+            return _embedder ??= new LLamaEmbedder(_params);
         });
-        this._modelPath = "";
     }
 
     /// <inheritdoc/>

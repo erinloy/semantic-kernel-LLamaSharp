@@ -28,20 +28,19 @@ public sealed class LLamaSharpTextCompletion : ITextCompletion, IDisposable
     /// Create LLamaSharpTextCompletion Instance
     /// </summary>
     /// <param name="modelPath"></param>
-    public LLamaSharpTextCompletion(string modelPath)
+    public LLamaSharpTextCompletion(ModelParams @params)
     {
-        this._modelPath = modelPath;
-        this._params = new ModelParams(_modelPath, contextSize: 2049);
+        this._params = @params;
         this._modelFunc = new Func<LLamaWeights>(() =>
         {
             return _model ??= LLamaWeights.LoadFromFile(_params); 
         });
     }
 
-    public LLamaSharpTextCompletion(Func<LLamaWeights> modelFunc)
+    public LLamaSharpTextCompletion(Func<LLamaWeights> modelFunc, ModelParams @params)
     {
+        this._params = @params;
         this._modelFunc = modelFunc;
-        this._modelPath = "";
     }
 
     /// <summary>

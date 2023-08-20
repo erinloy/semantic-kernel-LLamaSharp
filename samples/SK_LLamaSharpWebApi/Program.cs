@@ -6,6 +6,7 @@ using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.AI.TextCompletion;
 using Microsoft.SemanticKernel.AI.ChatCompletion;
 using Microsoft.SemanticKernel.AI.Embeddings;
+using LLama.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,10 +20,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IMemoryStore, VolatileMemoryStore>();
 builder.Services.AddSingleton<IKernel>((sp) =>
 {
+    var modelPath = builder.Configuration["ModelPath"]!;
+    var @params = new ModelParams(modelPath, contextSize: 2049);
+
     var kernel = new KernelBuilder()
-    .WithAIService<IChatCompletion>("llama_chat_completion", new LLamaSharpChatCompletion(builder.Configuration["ModelPath"]))
-    .WithAIService<ITextCompletion>("llama_text_completion", new LLamaSharpTextCompletion(builder.Configuration["ModelPath"]))
-    .WithAIService<ITextEmbeddingGeneration>("llama_text_embedding", new LLamaSharpEmbeddingGeneration(builder.Configuration["ModelPath"]))
+    .WithAIService<IChatCompletion>("llama_chat_completion", new LLamaSharpChatCompletion(@params))
+    .WithAIService<ITextCompletion>("llama_text_completion", new LLamaSharpTextCompletion(@params))
+    .WithAIService<ITextEmbeddingGeneration>("llama_text_embedding", new LLamaSharpEmbeddingGeneration(@params))
     .WithMemoryStorage(sp.GetRequiredService<IMemoryStore>())
     .Build();
     return kernel;

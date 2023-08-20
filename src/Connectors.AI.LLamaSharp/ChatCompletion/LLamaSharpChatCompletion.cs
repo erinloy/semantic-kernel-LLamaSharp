@@ -17,7 +17,6 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
     public sealed class LLamaSharpChatCompletion : IChatCompletion, IDisposable
     {
         private readonly Func<LLamaWeights> _modelFunc;
-        private readonly string _modelPath;
         private readonly LLama.Common.ModelParams _params;
         private LLamaWeights? _model;
 
@@ -28,20 +27,19 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
         /// Create LLamaSharpChatCompletion instance
         /// </summary>
         /// <param name="modelPath"></param>
-        public LLamaSharpChatCompletion(string modelPath)
+        public LLamaSharpChatCompletion(LLama.Common.ModelParams @params)
         {
-            this._modelPath = modelPath;
-            this._params = new LLama.Common.ModelParams(this._modelPath);
+            this._params = @params;
             this._modelFunc = new Func<LLamaWeights>(() =>
             {
                 return _model ??= LLamaWeights.LoadFromFile(this._params);
             });
         }
 
-        public LLamaSharpChatCompletion(Func<LLamaWeights> modelFunc)
+        public LLamaSharpChatCompletion(Func<LLamaWeights> modelFunc, LLama.Common.ModelParams @params)
         {
+            this._params = @params;
             this._modelFunc = modelFunc;
-            this._modelPath = "";
         }
 
         /// <inheritdoc/>
