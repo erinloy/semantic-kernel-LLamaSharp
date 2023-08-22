@@ -94,7 +94,7 @@ namespace Connectors.AI.LLamaSharp.ChatCompletion
         private ChatSession CreateChatSession()
         {
             _model ??= _modelFunc.Invoke();
-            var context = _model.CreateContext(_params, Encoding.UTF8);
+            var context = _model.CreateContext(_params);
             var executor = new InteractiveExecutor(context);
             var chatSession = new ChatSession(executor)
                 .WithHistoryTransform(new HistoryTransform())

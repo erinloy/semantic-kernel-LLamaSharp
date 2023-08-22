@@ -73,7 +73,7 @@ public sealed class LLamaSharpTextCompletion : ITextCompletion, IDisposable
     private StatelessExecutor CreateExecutor()
     {
         _model ??= this._modelFunc.Invoke();
-        var context = _model.CreateContext(_params, Encoding.UTF8);
+        var context = _model.CreateContext(_params);
         return new(context);
     }
 }
