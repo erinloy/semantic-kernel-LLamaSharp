@@ -19,7 +19,6 @@ namespace Microsoft.SemanticKernel.Connectors.AI.LLamaSharp.TextCompletion;
 public sealed class LLamaSharpTextCompletion : ITextCompletion, IDisposable
 {
     private readonly Func<LLamaWeights> _modelFunc;
-    private readonly string _modelPath;
     private readonly ModelParams _params;
     private LLamaWeights? _model;
 
@@ -33,7 +32,7 @@ public sealed class LLamaSharpTextCompletion : ITextCompletion, IDisposable
         this._params = @params;
         this._modelFunc = new Func<LLamaWeights>(() =>
         {
-            return _model ??= LLamaWeights.LoadFromFile(_params); 
+            return _model ??= LLamaWeights.LoadFromFile(_params);
         });
     }
 
